@@ -57,3 +57,30 @@ This log tracks architectural and product decisions made collaboratively, record
 * **Status:** Finalized
 * **Decision:** Store formal PRD and Decision Log directly inside the repository under `docs/`.
 * **Rationale:** Demonstrates professional engineering lifecycle and product clarity directly to technical recruiters and hiring managers inspecting GitHub.
+
+---
+
+## Log Entry 7: Tech Stack Selection (Dual-Stack Architecture)
+* **Date:** 2026-10-22
+* **Status:** Finalized
+* **Decision:** Decoupled architecture using **Python (FastAPI + Pydantic + Pytest)** on the backend and **TypeScript (React / Vite)** on the frontend.
+* **Rationale:**
+  1. Python is the industry standard for AI Engineering & AI QE, seamlessly connecting to **Project 2 (Python LLM Eval Framework)**.
+  2. TypeScript provides a modern, type-safe frontend and sets up the test target for **Project 3 (TypeScript Playwright Automation)**.
+
+---
+
+## Log Entry 8: AI Provider & Model Choice
+* **Date:** 2026-10-22
+* **Status:** Finalized
+* **Decision:** Selected **Google Gemini (`gemini-1.5-flash` / `gemini-2.0-flash`)** via Google AI Studio free tier.
+* **Rationale:** Zero development cost, rapid response times, and native JSON schema output enforcement. Decoupled via service interface to allow switching providers via environment variables.
+
+---
+
+## Log Entry 9: Numerical Group Sizing & Error Feedback Mechanics
+* **Date:** 2026-10-22
+* **Status:** Finalized
+* **Decision:**
+  1. Replaced loose string group size with explicit integer `traveler_count: int` (1 to 6) to enable exact per-person arithmetic multipliers for admission tickets and meals.
+  2. Adopted **Specific Error Feedback** for the self-correction loop (reporting exact math discrepancies and target categories) to maximize repair success on Retry 1.
