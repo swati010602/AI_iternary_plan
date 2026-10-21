@@ -126,7 +126,25 @@ class ItineraryResponse(BaseModel):
 
 ## 4. Deterministic Validation Engine & Self-Correction (Approach C)
 
-### 4.1 Invariant Rules Checked
+### 4.1 Architecture & Self-Correction Flowchart
+
+```mermaid
+flowchart TD
+    A["User Submits Request<br/>(City, Dates, Budget, Travelers)"] --> B{"1. Input Validator (Pydantic)"}
+    B -- "Invalid Dates / Budget <= 0" --> C["400 Bad Request<br/>(Immediate Client Error)"]
+    B -- "Valid Inputs" --> D["2. Call Gemini API<br/>(Structured Output Schema)"]
+    D --> E{"3. Deterministic Validation Engine"}
+    
+    E -- "Math Matches & Budget Satisfied" --> F["200 OK: Return Clean Itinerary"]
+    E -- "Math Mismatch or Budget Exceeded" --> G{"4. Retry Count < 1?"}
+    
+    G -- "Yes (First Failure)" --> H["Self-Correction Loop:<br/>Re-prompt Gemini with Exact Error Delta"]
+    H --> D
+    
+    G -- "No (Retry Exhausted)" --> I["Graceful Degradation:<br/>Return Itinerary + Warning Badge"]
+```
+
+### 4.2 Invariant Rules Checked
 1. **Math Integrity Check:**
    $$\text{total\_calculated\_cost} == \text{accommodation} + \text{food} + \text{activities} + \text{transit}$$
 2. **Budget Compliance Check:**
@@ -138,7 +156,7 @@ class ItineraryResponse(BaseModel):
 5. **Geographic Clustering:**
    Every day must define a non-empty `neighborhood_theme`.
 
-### 4.2 Self-Correction Loop
+### 4.3 Self-Correction Loop Mechanics
 If validation catches an arithmetic or budget failure:
 * **Retry 1 (Self-Correction):** The validator constructs a targeted error prompt:
   > *"Validation Failure: The generated itinerary total is $680, which exceeds the user budget of $600 by $80. Replace high-cost activities with free or budget-friendly alternatives to bring the total under $600."*
